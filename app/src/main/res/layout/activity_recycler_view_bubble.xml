@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.dmw.ninepatchdrawablelib.RecyclerViewDynamicBubbleActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_chat"
+            android:layout_width="match_parent"
+            android:layout_above="@+id/ll_add_msg"
+            tools:listitem="@layout/item_chat_layout"
+            android:layout_marginBottom="20dp"
+            android:layout_height="match_parent" />
+
+
+    <LinearLayout
+            android:id="@+id/ll_add_msg"
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_height="wrap_content">
+
+        <Button
+                android:id="@+id/btn_add_other_msg"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="添加其他发送的消息"
+                android:layout_height="wrap_content" />
+
+        <Button
+                android:id="@+id/btn_add_self_msg"
+                android:layout_width="0dp"
+                android:text="添加自己发送的消息"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+</RelativeLayout>
