@@ -30,10 +30,9 @@ NinePatchDrawable 的构造函数。
  * Create drawable from raw nine-patch data, setting initial target density
  * based on the display metrics of the resources.
  */
-public NinePatchDrawable(Resources res,Bitmap bitmap,byte[]chunk,
-        Rect padding,String srcName){
+public NinePatchDrawable(Resources res,Bitmap bitmap,byte[]chunk,Rect padding,String srcName){
         this(new NinePatchState(new NinePatch(bitmap,chunk,srcName),padding),res);
-        }
+}
 ```
 
 其中最关键的点在于构建`byte[] chunk`参数。
@@ -256,8 +255,7 @@ return NinePatchDrawableFactory(context)
 
 如图所示：宽高是128*112。横向padding取值为31,90，纵向padding取值为37,75。
 
-![padding](images%2Fpadding.png)
-
+![padding取值.png](images%2Fpadding%E5%8F%96%E5%80%BC.png)
 
 ### 其他
 
