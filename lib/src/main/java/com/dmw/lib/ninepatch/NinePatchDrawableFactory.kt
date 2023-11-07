@@ -3,6 +3,7 @@ package com.dmw.lib.ninepatch
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.NinePatchDrawable
@@ -28,11 +29,20 @@ class NinePatchDrawableFactory {
         val NO_COLOR = 0x00000001
         val COLOR_SIZE = 9
 
+        /**
+         * 同一个路径的图片，如果需要水平镜像，保存到在LruCache的时候，key就是这个前缀+图片路径
+         */
+        val HORIZONTAL_MIRROR_PREFIX = "horizontal_mirror_prefix"
+
     }
 
     private var scale = false
 
-    private var bitmap: Bitmap? = null
+    /**
+     * 是否要水平镜像，如果左右气泡都用一张图的话，需要水平镜像一下
+     */
+    private var horizontalMirror = false
+
     private var width: Int = 0
     private var height: Int = 0
 
@@ -58,6 +68,7 @@ class NinePatchDrawableFactory {
      * @param paddingRect padding的区域
      * @param originWidth 原始图片的宽度
      * @param originHeight 原始图片的高度
+     * @param horizontalMirror 是否水平镜像，如果左右聊天气泡都用一张图的话，需要水平镜像一下
      * 注意，资源都是一倍图，在drawable文件夹的，从资源加载会自动缩放到当前的density。如果是从文件加载，则需要自己处理缩放。
      */
     fun get9PatchDrawableFromResource(
@@ -68,8 +79,10 @@ class NinePatchDrawableFactory {
         paddingRect: Rect,
         originWidth: Int,
         originHeight: Int,
+        horizontalMirror: Boolean = false,
     ): Drawable? {
 
+        this.horizontalMirror = horizontalMirror
         val currentTimeMillis = System.currentTimeMillis()
 
         setPatchHorizontal(patchHorizontal)
@@ -94,7 +107,12 @@ class NinePatchDrawableFactory {
     private fun get9PatchFromResource(resources: Resources, resId: Int): Drawable? {
         val resIdString = resId.toString()
         Log.i(TAG, "setResourceData: resId = $resId")
-        var bitmap = bitmapLruCache.getBitmap(resIdString)
+
+        var bitmap = if (horizontalMirror) {
+            bitmapLruCache.getBitmap(HORIZONTAL_MIRROR_PREFIX + resIdString)
+        } else {
+            bitmapLruCache.getBitmap(resIdString)
+        }
 
         if (bitmap == null) {
             bitmap = try {
@@ -105,8 +123,22 @@ class NinePatchDrawableFactory {
             }
 
             if (bitmap != null) {
+                if (horizontalMirror) {
+                    val matrix = Matrix()
+                    matrix.postScale(-1f, 1f)
+                    val mirrorBitmap = Bitmap.createBitmap(
+                        bitmap, 0, 0, bitmap.width, bitmap.height, matrix,
+                        false
+                    )
+                    bitmapLruCache.putBitmap(
+                        HORIZONTAL_MIRROR_PREFIX + resIdString,
+                        mirrorBitmap
+                    )
+                    bitmap = mirrorBitmap
+                } else {
+                    bitmapLruCache.putBitmap(resIdString, bitmap)
+                }
                 Log.i(TAG, "setResourceData: width = ${bitmap.width}, height = ${bitmap.height}")
-                bitmapLruCache.putBitmap(resIdString, bitmap)
             }
         } else {
             Log.i(TAG, "setResourceData: 从缓存中获取bitmap != null")
@@ -135,12 +167,14 @@ class NinePatchDrawableFactory {
         patchVertical: PatchStretchBean,
         paddingRect: Rect,
         originWidth: Int,
-        originHeight: Int
+        originHeight: Int,
+        horizontalMirror: Boolean = false
     ): Drawable? {
 
         val currentTimeMillis = System.currentTimeMillis()
 
         this.scale = scale
+        this.horizontalMirror = horizontalMirror
 
         setPatchHorizontal(patchHorizontal)
         setPatchVertical(patchVertical)
@@ -167,7 +201,12 @@ class NinePatchDrawableFactory {
     ): Drawable? {
 
         val absolutePath = file.absolutePath
-        var bitmap = bitmapLruCache.getBitmap(absolutePath)
+
+        var bitmap = if (horizontalMirror) {
+            bitmapLruCache.getBitmap(HORIZONTAL_MIRROR_PREFIX + absolutePath)
+        } else {
+            bitmapLruCache.getBitmap(absolutePath)
+        }
 
         if (bitmap == null) {
             bitmap = try {
@@ -183,25 +222,59 @@ class NinePatchDrawableFactory {
                     val displayMetrics: DisplayMetrics = resources.displayMetrics
                     val density = displayMetrics.density
 
-                    val width = (bitmap.width * density).toInt()
-                    val height = (bitmap.height * density).toInt()
+                    val matrix = Matrix()
+                    if (horizontalMirror) {
+                        matrix.preScale(-1f, 1f)
+                    }
+                    matrix.postScale(density, density)
+                    val scaledBitmap =
+                        Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 
-                    Log.i(TAG, "setFileData: width = ${bitmap.width}, height = ${bitmap.height}")
-                    val scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true)
+                    //val width = (bitmap.width * density).toInt()
+                    //val height = (bitmap.height * density).toInt()
+
+                    //Log.i(TAG, "setFileData: width = ${bitmap.width}, height = ${bitmap.height}")
+                    //val scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true)
                     Log.i(
                         TAG,
                         "setFileData: scaledBitmap width = ${scaledBitmap.width}, height = ${scaledBitmap.height}"
                     )
-                    bitmapLruCache.putBitmap(absolutePath, scaledBitmap)
+                    if (horizontalMirror) {
+                        bitmapLruCache.putBitmap(
+                            HORIZONTAL_MIRROR_PREFIX + absolutePath,
+                            scaledBitmap
+                        )
+                    } else {
+                        bitmapLruCache.putBitmap(absolutePath, scaledBitmap)
+                    }
                     bitmap = scaledBitmap
-
                 } else {
                     Log.i(
                         TAG,
                         "setFileData: not scale  width = ${bitmap.width}, height = ${bitmap.height}"
                     )
 
-                    bitmapLruCache.putBitmap(absolutePath, bitmap)
+                    if (horizontalMirror) {
+                        val matrix = Matrix()
+                        matrix.postScale(-1f, 1f)
+                        val mirrorBitmap =
+                            Bitmap.createBitmap(
+                                bitmap,
+                                0,
+                                0,
+                                bitmap.width,
+                                bitmap.height,
+                                matrix,
+                                false
+                            )
+                        bitmapLruCache.putBitmap(
+                            HORIZONTAL_MIRROR_PREFIX + absolutePath,
+                            mirrorBitmap
+                        )
+                        bitmap = mirrorBitmap
+                    } else {
+                        bitmapLruCache.putBitmap(absolutePath, bitmap)
+                    }
                 }
             }
         }
@@ -214,7 +287,6 @@ class NinePatchDrawableFactory {
 
     private fun get9PatchDrawable(bitmap: Bitmap?, resources: Resources): Drawable? {
         return try {
-            val buildBitmap = bitmap
             if (mRectPadding.left == 0 && mRectPadding.right == 0 && mRectPadding.top == 0 && mRectPadding.bottom == 0) {
                 buildPadding()
             }
@@ -222,7 +294,7 @@ class NinePatchDrawableFactory {
                 chunk = buildChunk()
             }
             val ninePatchDrawable =
-                NinePatchDrawable(resources, buildBitmap, chunk, mRectPadding, null)
+                NinePatchDrawable(resources, bitmap, chunk, mRectPadding, null)
             ninePatchDrawable
         } catch (e: Exception) {
             null
@@ -233,7 +305,7 @@ class NinePatchDrawableFactory {
      * 直接处理bitmap数据
      */
     private fun setBitmapData(bitmap: Bitmap?) {
-        this.bitmap = bitmap
+        Log.i(TAG, "setBitmapData: width = ${bitmap?.width}, height = ${bitmap?.height}")
         this.width = bitmap?.width ?: 0
         this.height = bitmap?.height ?: 0
     }
@@ -257,7 +329,7 @@ class NinePatchDrawableFactory {
         byteBuffer.putInt(0)
         byteBuffer.putInt(0)
 
-        //Note: 如果这里不加的话，拉伸会有问题。目前还没搞清楚
+        //Note: 等待进一步研究，这四个int值，好像都写0也可以。
         //左右padding
         byteBuffer.putInt(mRectPadding.left)
         byteBuffer.putInt(mRectPadding.right)
@@ -278,8 +350,13 @@ class NinePatchDrawableFactory {
         // regions 控制横向拉伸的线段数据
         //mDivX数组
         patchRegionHorizontal.forEach {
-            byteBuffer.putInt(it.start * width / originWidth)
-            byteBuffer.putInt(it.end * width / originWidth)
+            if (horizontalMirror) {
+                byteBuffer.putInt((originWidth - it.end) * width / originWidth)
+                byteBuffer.putInt((originWidth - it.start) * width / originWidth)
+            } else {
+                byteBuffer.putInt(it.start * width / originWidth)
+                byteBuffer.putInt(it.end * width / originWidth)
+            }
         }
 
         //mDivY数组
@@ -339,8 +416,13 @@ class NinePatchDrawableFactory {
      * （注意：这里的left，top，right，bottom同xml文件中的padding意思一致，只不过这里是百分比形式）
      */
     private fun buildPadding() {
-        mRectPadding.left = ((paddingLeft * width) / originWidth)
-        mRectPadding.right = ((originWidth - paddingRight) * width / originWidth)
+        if (horizontalMirror) {
+            mRectPadding.left = ((originWidth - paddingRight) * width / originWidth)
+            mRectPadding.right = ((paddingLeft * width) / originWidth)
+        } else {
+            mRectPadding.left = ((paddingLeft * width) / originWidth)
+            mRectPadding.right = ((originWidth - paddingRight) * width / originWidth)
+        }
         mRectPadding.top = (paddingTop * height / originHeight)
         mRectPadding.bottom = ((originHeight - paddingBottom) * height / originHeight)
 

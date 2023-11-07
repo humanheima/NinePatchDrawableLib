@@ -63,7 +63,7 @@ class ChatAdapter(private val items: List<ChatItem>, val context: Context, val i
             lp?.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT)
         }
         holder.tvContent.text = chatItem.content
-        val drawable = getDrawable()
+        val drawable = getDrawable(chatItem.isSelf)
         holder.tvContent.background = drawable
         if (drawable is AnimationDrawable) {
             drawable.start()
@@ -75,12 +75,12 @@ class ChatAdapter(private val items: List<ChatItem>, val context: Context, val i
         return items.size
     }
 
-    private fun getDrawable(): Drawable? {
+    private fun getDrawable(isSelf: Boolean): Drawable? {
         if (isDynamic) {
             //return getDynamicDrawableFromFile(context, "bubbleframe")
             return getDynamicDrawableFromResource(context)
         }
-        return getStaticDrawable()
+        return getStaticDrawable(isSelf)
     }
 
 
@@ -123,15 +123,18 @@ class ChatAdapter(private val items: List<ChatItem>, val context: Context, val i
         )
     }
 
-
-    private fun getStaticDrawable(): Drawable? {
-        //return getStaticDrawableFromResource(context)
-        return getStaticDrawableFromFile(context, "bubbleframe/bubble_frame1.png")
+    private fun getStaticDrawable(isSelf: Boolean): Drawable? {
+        return getStaticDrawableFromResource(context, isSelf)
+        //return getStaticDrawableFromFile(context, "bubbleframe/bubble_frame1.png", isSelf)
     }
 
-    private fun getStaticDrawableFromFile(context: Context, pngFileName: String): Drawable? {
+    private fun getStaticDrawableFromFile(
+        context: Context,
+        pngFileName: String,
+        isSelf: Boolean
+    ): Drawable? {
         val dir = context.getExternalFilesDir(null) ?: return null
-        val pngFile: File = File(dir, pngFileName)
+        val pngFile = File(dir, pngFileName)
         if (!pngFile.exists()) {
             return null
         }
@@ -142,17 +145,17 @@ class ChatAdapter(private val items: List<ChatItem>, val context: Context, val i
             pngFile,
             PatchStretchBean(60, 61),
             PatchStretchBean(52, 53),
-            Rect(31, 37, 90, 75), 128, 112
+            Rect(31, 37, 90, 75), 128, 112, isSelf
         )
     }
 
-    private fun getStaticDrawableFromResource(context: Context): Drawable? {
+    private fun getStaticDrawableFromResource(context: Context, isSelf: Boolean): Drawable? {
         return NinePatchDrawableFactory().get9PatchDrawableFromResource(
             context.resources,
             R.drawable.bubble_frame1,
             PatchStretchBean(60, 61),
             PatchStretchBean(52, 53),
-            Rect(31, 37, 90, 75), 128, 112
+            Rect(31, 37, 90, 75), 128, 112, isSelf
         )
     }
 
