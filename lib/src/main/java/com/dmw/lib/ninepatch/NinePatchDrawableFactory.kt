@@ -19,7 +19,7 @@ import java.nio.ByteOrder
  * Created by p_dmweidu on 2023/11/6
  * Desc: 从文件或者资源中加载一张png，然后转化成NinePatchDrawable返回。
  */
-class NinePatchDrawableFactory(val context: Context) {
+class NinePatchDrawableFactory(private val context: Context) {
 
     companion object {
 

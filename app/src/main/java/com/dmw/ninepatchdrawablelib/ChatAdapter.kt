@@ -108,16 +108,17 @@ class ChatAdapter(
      * 从正常的资源文件加载动态气泡
      */
     private fun getDynamicDrawableFromResource(context: Context, isSelf: Boolean): Drawable? {
-        return AnimationDrawableFactory().getAnimationDrawableFromResource(
-            context.resources,
-            resIdList,
-            PatchStretchBean(60, 61),
-            PatchStretchBean(52, 53),
-            Rect(31, 37, 90, 75),
-            128, 112, 5, isSelf
-        )
+        return AnimationDrawableFactory(context)
+            .setDrawableResIdList(resIdList)
+            .setHorizontalStretchBean(PatchStretchBean(60, 61))
+            .setVerticalStretchBean(PatchStretchBean(52, 53))
+            .setOriginSize(128, 112)
+            .setPadding(Rect(31, 37, 90, 75))
+            .setHorizontalMirror(isSelf)
+            .setFinishCount(3)
+            .setFrameDuration(100)
+            .buildFromResource()
     }
-
 
     /**
      * 从文件加载动态气泡
@@ -138,20 +139,17 @@ class ChatAdapter(
             return null
         }
 
-        return AnimationDrawableFactory().getAnimationDrawableFromFile(
-            context.resources,
-            true,
-            pngsDir,
-            PatchStretchBean(60, 61),
-            PatchStretchBean(52, 53),
-            Rect(31, 37, 90, 75), 128, 112, 5,
-            isSelf
-        )
-    }
-
-    private fun getStaticDrawable(isSelf: Boolean): Drawable? {
-        return getStaticDrawableFromResource(context, isSelf)
-        //return getStaticDrawableFromFile(context, "bubbleframe/bubble_frame1.png", isSelf)
+        return AnimationDrawableFactory(context)
+            .setDrawableDir(pngsDir)
+            .setHorizontalStretchBean(PatchStretchBean(60, 61))
+            .setVerticalStretchBean(PatchStretchBean(52, 53))
+            .setOriginSize(128, 112)
+            .setPadding(Rect(31, 37, 90, 75))
+            .setHorizontalMirror(isSelf)
+            .setScaleFromFile(true)
+            .setFinishCount(3)
+            .setFrameDuration(100)
+            .buildFromFile()
     }
 
     private fun getStaticDrawableFromFile(

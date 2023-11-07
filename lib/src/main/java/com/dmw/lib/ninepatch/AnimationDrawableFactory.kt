@@ -1,5 +1,6 @@
 package com.dmw.lib.ninepatch
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -29,7 +30,7 @@ import java.nio.ByteOrder
  * 注意：一组图片的宽高必须一致，不然可能会导致未知bug
  * 注意：一组图片的宽高必须一致，不然可能会导致未知bug
  */
-class AnimationDrawableFactory {
+class AnimationDrawableFactory(private val context: Context) {
 
     companion object {
 
@@ -52,77 +53,165 @@ class AnimationDrawableFactory {
     /**
      * 从文件加载的图片是否需要缩放，如果文件中是1倍图，需要缩放，如果就是正常的3倍图，不需要缩放，这块缩放逻辑可以自行调整
      */
-    private var scale = false
+    private var scaleBitmapFromFile = false
 
     /**
      * 是否要水平镜像，如果左右气泡都用一张图的话，需要水平镜像一下
      */
     private var horizontalMirror = false
 
-    private var width: Int = 0
-    private var height: Int = 0
+    /**
+     * 帧动画AnimationDrawable循环次数
+     */
+    private var finishCount: Int = 1
 
+    /**
+     * 帧动画AnimationDrawable每一帧的时间，默认100毫秒
+     */
+    private var frameDuration: Int = 100
+
+    /**
+     * 图片资源id列表
+     */
+    private var drawableResIdList: MutableList<Int>? = null
+
+    /**
+     * 图片文件所在的目录，目前只测试了png格式
+     */
+    private var drawableDir: File? = null
+
+
+    /**
+     * 原始图片宽高
+     */
     private var originWidth: Int = 0
     private var originHeight: Int = 0
 
-    private var patchRegionHorizontal = mutableListOf<PatchStretchBean>()
-    private var patchRegionVertical = mutableListOf<PatchStretchBean>()
+    /**
+     * 最终使用的图片宽高
+     */
+    private var finalWidth: Int = 0
+    private var finalHeight: Int = 0
+
+    private var horizontalStretchBean: PatchStretchBean? = null
+    private var verticalStretchBean: PatchStretchBean? = null
+
+    private var paddingRect: Rect? = null
 
     private var paddingLeft: Int = 0
     private var paddingRight: Int = 0
     private var paddingTop: Int = 0
     private var paddingBottom: Int = 0
 
+    private var finalPaddingRect = Rect()
+
+
     private var chunk: ByteArray? = null
+
+
+    /**
+     * 设置横向的拉伸线段，必须的
+     * @param horizontalStretchBean 横向的拉伸线段
+     */
+    fun setHorizontalStretchBean(horizontalStretchBean: PatchStretchBean): AnimationDrawableFactory {
+        this.horizontalStretchBean = horizontalStretchBean
+        return this
+    }
+
+    /**
+     * 设置竖向的拉伸线段，必须的
+     * @param verticalStretchBean 竖向的拉伸线段
+     */
+    fun setVerticalStretchBean(verticalStretchBean: PatchStretchBean): AnimationDrawableFactory {
+        this.verticalStretchBean = verticalStretchBean
+        return this
+    }
+
+    /**
+     * 设置原始图片的宽高，必须的，是不是可以从bitmap里获取？不能，因为第二次复用的时候，无法获取原始图片的宽度和高度
+     * @param originWidth 原始图片的宽度
+     * @param originHeight 原始图片的高度
+     */
+    fun setOriginSize(originWidth: Int, originHeight: Int): AnimationDrawableFactory {
+        this.originWidth = originWidth
+        this.originHeight = originHeight
+        return this
+    }
+
+    fun setDrawableResIdList(drawableResIdList: MutableList<Int>): AnimationDrawableFactory {
+        this.drawableResIdList = drawableResIdList
+        return this
+    }
+
+    fun setDrawableDir(drawableDir: File): AnimationDrawableFactory {
+        this.drawableDir = drawableDir
+        return this
+    }
+
+    /**
+     * 设置padding，不是必须的。
+     * @param rect padding的区域
+     */
+    fun setPadding(rect: Rect): AnimationDrawableFactory {
+        paddingRect = rect
+        return this
+    }
+
+    /**
+     * 设置是否水平镜像，如果左右聊天气泡都用一张图的话，需要水平镜像一下，不是必须的
+     * @param horizontalMirror 是否水平镜像
+     */
+    fun setHorizontalMirror(horizontalMirror: Boolean): AnimationDrawableFactory {
+        this.horizontalMirror = horizontalMirror
+        return this
+    }
+
+    /**
+     * 从文件加载出来的bitmap，是否要缩放。如果文件中是1倍图，那么需要缩放，如果是3倍图，就不用缩放了
+     */
+    fun setScaleFromFile(scaleBitmapFromFile: Boolean): AnimationDrawableFactory {
+        this.scaleBitmapFromFile = scaleBitmapFromFile
+        return this
+    }
+
+    /**
+     * 不是必须的，如果不设置，就用默认的，循环一次
+     */
+    fun setFinishCount(finishCount: Int): AnimationDrawableFactory {
+        this.finishCount = finishCount
+        return this
+    }
+
+    /**
+     * 不是必须的，如果不设置，就用默认的，100毫秒
+     */
+    fun setFrameDuration(frameDuration: Int): AnimationDrawableFactory {
+        this.frameDuration = frameDuration
+        return this
+    }
 
     /**
      *
      * @param resources
-     * @param resIdList 资源id列表
-     * @param patchHorizontal 横向拉伸的线段
-     * @param patchVertical 竖向拉伸的线段
-     * @param paddingRect padding的区域
-     * @param originWidth 原始图片的宽度
-     * @param originHeight 原始图片的高度
-     * @param finishCount 动画循环次数
-     * @param horizontalMirror 是否水平镜像，如果左右聊天气泡都用一张图的话，需要水平镜像一下
      * 注意，资源都是一倍图，在drawable文件夹的，从资源加载会自动缩放到当前的density。如果是从文件加载，则需要自己处理缩放。
      */
-    fun getAnimationDrawableFromResource(
-        resources: Resources,
-        resIdList: MutableList<Int>,
-        patchHorizontal: PatchStretchBean,
-        patchVertical: PatchStretchBean,
-        paddingRect: Rect,
-        originWidth: Int,
-        originHeight: Int,
-        finishCount: Int,
-        horizontalMirror: Boolean = false
-    ): AnimationDrawable? {
+    fun buildFromResource(): AnimationDrawable? {
 
-        if (resIdList.isNullOrEmpty()) {
+        if (drawableResIdList.isNullOrEmpty()) {
             return null
         }
 
-        this.horizontalMirror = horizontalMirror
-
         val currentTimeMillis = System.currentTimeMillis()
-
-        setPatchHorizontal(patchHorizontal)
-        setPatchVertical(patchVertical)
-        setPadding(paddingRect)
-        setOriginSize(originWidth, originHeight)
         val animationDrawable = CanStopAnimationDrawable()
         animationDrawable.setFinishCount(finishCount)
 
-        resIdList.forEach { resId ->
-            val ninePatchDrawable = get9PatchFromResource(resources, resId)
+        drawableResIdList?.forEach { resId ->
+            val ninePatchDrawable = get9PatchFromResource(context.resources, resId)
             if (ninePatchDrawable != null) {
                 animationDrawable.addFrame(ninePatchDrawable, 100)
             }
         }
         animationDrawable.isOneShot = false
-
 
         Log.i(
             TAG,
@@ -174,7 +263,7 @@ class AnimationDrawableFactory {
             Log.d(TAG, "setResourceData: 从缓存中获取bitmap != null")
         }
 
-        setBitmapData(bitmap)
+        setFinalUsedBitmapSize(bitmap)
 
         return get9PatchDrawable(bitmap, resources)
     }
@@ -191,42 +280,22 @@ class AnimationDrawableFactory {
      * @param originHeight 原始图片的高度
      * @param finishCount 动画循环次数
      */
-    fun getAnimationDrawableFromFile(
-        resources: Resources,
-        scale: Boolean,
-        dir: File,
-        patchHorizontal: PatchStretchBean,
-        patchVertical: PatchStretchBean,
-        paddingRect: Rect,
-        originWidth: Int,
-        originHeight: Int,
-        finishCount: Int,
-        horizontalMirror: Boolean = false
-    ): AnimationDrawable? {
-
-        this.horizontalMirror = horizontalMirror
+    fun buildFromFile(): AnimationDrawable? {
         val currentTimeMillis = System.currentTimeMillis()
-
-        if (!dir.exists()) {
+        if (drawableDir == null || !drawableDir!!.exists()) {
             return null
         }
-        val files = dir.listFiles()
+        val files = drawableDir?.listFiles()
         if (files.isNullOrEmpty()) {
             return null
         }
-        this.scale = scale
-
-        setPatchHorizontal(patchHorizontal)
-        setPatchVertical(patchVertical)
-        setPadding(paddingRect)
-        setOriginSize(originWidth, originHeight)
         val animationDrawable = CanStopAnimationDrawable()
         //设置循环5次，就结束
         animationDrawable.setFinishCount(finishCount)
         files.forEach { pngFile ->
-            val ninePatchDrawable = get9PatchFromFile(resources, pngFile)
+            val ninePatchDrawable = get9PatchFromFile(context.resources, pngFile)
             if (ninePatchDrawable != null) {
-                animationDrawable.addFrame(ninePatchDrawable, 100)
+                animationDrawable.addFrame(ninePatchDrawable, frameDuration)
             }
         }
         animationDrawable.isOneShot = false
@@ -266,7 +335,7 @@ class AnimationDrawableFactory {
             }
 
             if (bitmap != null) {
-                if (scale) {
+                if (scaleBitmapFromFile) {
                     // warning：2023/11/5: 注意，这里从文件里加载的是1倍图，所以要放大一下
                     val displayMetrics: DisplayMetrics = resources.displayMetrics
                     val density = displayMetrics.density
@@ -318,7 +387,7 @@ class AnimationDrawableFactory {
             }
         }
 
-        setBitmapData(bitmap)
+        setFinalUsedBitmapSize(bitmap)
 
         return get9PatchDrawable(bitmap, resources)
 
@@ -326,14 +395,19 @@ class AnimationDrawableFactory {
 
     private fun get9PatchDrawable(bitmap: Bitmap?, resources: Resources): Drawable? {
         return try {
-            if (mRectPadding.left == 0 && mRectPadding.right == 0 && mRectPadding.top == 0 && mRectPadding.bottom == 0) {
+            paddingRect?.let {
+                paddingLeft = it.left
+                paddingRight = it.right
+                paddingTop = it.top
+                paddingBottom = it.bottom
                 buildPadding()
             }
+
             if (chunk == null) {
                 chunk = buildChunk()
             }
             val ninePatchDrawable =
-                NinePatchDrawable(resources, bitmap, chunk, mRectPadding, null)
+                NinePatchDrawable(resources, bitmap, chunk, finalPaddingRect, null)
             ninePatchDrawable
         } catch (e: Exception) {
             null
@@ -343,15 +417,15 @@ class AnimationDrawableFactory {
     /**
      * 直接处理bitmap数据
      */
-    private fun setBitmapData(bitmap: Bitmap?) {
-        this.width = bitmap?.width ?: 0
-        this.height = bitmap?.height ?: 0
+    private fun setFinalUsedBitmapSize(bitmap: Bitmap?) {
+        this.finalWidth = bitmap?.width ?: 0
+        this.finalHeight = bitmap?.height ?: 0
     }
 
     private fun buildChunk(): ByteArray {
-        // 横向和竖向端点的数量 = 线段数量 * 2
-        val horizontalEndpointsSize = patchRegionHorizontal.size * 2
-        val verticalEndpointsSize = patchRegionVertical.size * 2
+        // 横向和竖向端点的数量 = 线段数量 * 2，这里只有一个线段，所以都是2
+        val horizontalEndpointsSize = 2
+        val verticalEndpointsSize = 2
 
         //这里计算的 arraySize 是 int 值，最终占用的字节数是 arraySize * 4
         val arraySize = 1 + 2 + 4 + 1 + horizontalEndpointsSize + verticalEndpointsSize + COLOR_SIZE
@@ -369,11 +443,11 @@ class AnimationDrawableFactory {
 
         //Note: 目前还没搞清楚，发现都 byteBuffer.putInt(0)，也没问题。
         //左右padding
-        byteBuffer.putInt(mRectPadding.left)
-        byteBuffer.putInt(mRectPadding.right)
+        byteBuffer.putInt(finalPaddingRect.left)
+        byteBuffer.putInt(finalPaddingRect.right)
 //        //上下padding
-        byteBuffer.putInt(mRectPadding.top)
-        byteBuffer.putInt(mRectPadding.bottom)
+        byteBuffer.putInt(finalPaddingRect.top)
+        byteBuffer.putInt(finalPaddingRect.bottom)
 
 //        byteBuffer.putInt(0)
 //        byteBuffer.putInt(0)
@@ -386,20 +460,20 @@ class AnimationDrawableFactory {
         byteBuffer.putInt(0)
 
         //mDivX数组，控制横向拉伸的线段数据
-        patchRegionHorizontal.forEach {
+        horizontalStretchBean?.let {
             if (horizontalMirror) {
-                byteBuffer.putInt((originWidth - it.end) * width / originWidth)
-                byteBuffer.putInt((originWidth - it.start) * width / originWidth)
+                byteBuffer.putInt((originWidth - it.end) * finalWidth / originWidth)
+                byteBuffer.putInt((originWidth - it.start) * finalWidth / originWidth)
             } else {
-                byteBuffer.putInt(it.start * width / originWidth)
-                byteBuffer.putInt(it.end * width / originWidth)
+                byteBuffer.putInt(it.start * finalWidth / originWidth)
+                byteBuffer.putInt(it.end * finalWidth / originWidth)
             }
         }
 
         //mDivY数组，控制竖向拉伸的线段数据
-        patchRegionVertical.forEach {
-            byteBuffer.putInt(it.start * height / originHeight)
-            byteBuffer.putInt(it.end * height / originHeight)
+        verticalStretchBean?.let {
+            byteBuffer.putInt(it.start * finalHeight / originHeight)
+            byteBuffer.putInt(it.end * finalHeight / originHeight)
         }
 
         //mColor数组
@@ -410,60 +484,23 @@ class AnimationDrawableFactory {
         return byteBuffer.array()
     }
 
-    private fun setPatchHorizontal(vararg patchRegion: PatchStretchBean) {
-        patchRegion.forEach {
-            if (patchRegionHorizontal.contains(it)) {
-                return@forEach
-            }
-            patchRegionHorizontal.add(it)
-        }
-    }
-
-    private fun setPatchVertical(vararg patchRegion: PatchStretchBean) {
-        patchRegion.forEach {
-            if (patchRegionVertical.contains(it)) {
-                return@forEach
-            }
-            patchRegionVertical.add(it)
-        }
-    }
-
-
-    /**
-     * 设置原始图片的宽高
-     */
-    private fun setOriginSize(originWidth: Int, originHeight: Int): AnimationDrawableFactory {
-        this.originWidth = originWidth
-        this.originHeight = originHeight
-        return this
-    }
-
-    private fun setPadding(rect: Rect) {
-        paddingLeft = rect.left
-        paddingTop = rect.top
-        paddingRight = rect.right
-        paddingBottom = rect.bottom
-    }
-
-    private var mRectPadding = Rect()
-
     /**
      * 控制内容填充的区域
      * （注意：这里的left，top，right，bottom同xml文件中的padding意思一致，只不过这里是百分比形式）
      */
     private fun buildPadding() {
         if (horizontalMirror) {
-            mRectPadding.left = ((originWidth - paddingRight) * width / originWidth)
-            mRectPadding.right = ((paddingLeft * width) / originWidth)
+            finalPaddingRect.left = ((originWidth - paddingRight) * finalWidth / originWidth)
+            finalPaddingRect.right = ((paddingLeft * finalWidth) / originWidth)
         } else {
-            mRectPadding.left = (paddingLeft * width / originWidth)
-            mRectPadding.right = ((originWidth - paddingRight) * width / originWidth)
+            finalPaddingRect.left = (paddingLeft * finalWidth / originWidth)
+            finalPaddingRect.right = ((originWidth - paddingRight) * finalWidth / originWidth)
         }
 
-        mRectPadding.top = (paddingTop * height / originHeight)
-        mRectPadding.bottom = ((originHeight - paddingBottom) * height / originHeight)
+        finalPaddingRect.top = (paddingTop * finalHeight / originHeight)
+        finalPaddingRect.bottom = ((originHeight - paddingBottom) * finalHeight / originHeight)
 
-        Log.i(TAG, "buildPadding: rect = $mRectPadding")
+        Log.i(TAG, "buildPadding: rect = $finalPaddingRect")
     }
 
 
