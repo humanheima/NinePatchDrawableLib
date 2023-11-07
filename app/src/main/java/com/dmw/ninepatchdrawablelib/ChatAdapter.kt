@@ -109,14 +109,14 @@ class ChatAdapter(
      */
     private fun getDynamicDrawableFromResource(context: Context, isSelf: Boolean): Drawable? {
         return AnimationDrawableFactory(context)
-            .setDrawableResIdList(resIdList)
-            .setHorizontalStretchBean(PatchStretchBean(60, 61))
-            .setVerticalStretchBean(PatchStretchBean(52, 53))
-            .setOriginSize(128, 112)
-            .setPadding(Rect(31, 37, 90, 75))
-            .setHorizontalMirror(isSelf)
-            .setFinishCount(3)
-            .setFrameDuration(100)
+            .setDrawableResIdList(resIdList)//图片资源id列表
+            .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
+            .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
+            .setOriginSize(128, 112)//原始图片大小
+            .setPadding(Rect(31, 37, 90, 75))//padding区域
+            .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
+            .setFinishCount(3)//动画播放次数,不是必须的
+            .setFrameDuration(100)//每帧动画的播放时间,不是必须的
             .buildFromResource()
     }
 
@@ -140,15 +140,15 @@ class ChatAdapter(
         }
 
         return AnimationDrawableFactory(context)
-            .setDrawableDir(pngsDir)
-            .setHorizontalStretchBean(PatchStretchBean(60, 61))
-            .setVerticalStretchBean(PatchStretchBean(52, 53))
-            .setOriginSize(128, 112)
-            .setPadding(Rect(31, 37, 90, 75))
-            .setHorizontalMirror(isSelf)
-            .setScaleFromFile(true)
-            .setFinishCount(3)
-            .setFrameDuration(100)
+            .setDrawableDir(pngsDir)//图片文件所在的目录
+            .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
+            .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
+            .setOriginSize(128, 112)//原始图片大小
+            .setPadding(Rect(31, 37, 90, 75))//padding区域
+            .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
+            .setScaleFromFile(true)//是否从文件中读取图片的缩放比例，不是必须的
+            .setFinishCount(3)//动画播放次数
+            .setFrameDuration(100)//每帧动画的播放时间
             .buildFromFile()
     }
 
@@ -164,24 +164,24 @@ class ChatAdapter(
         }
 
         return NinePatchDrawableFactory(context)
-            .setDrawableFile(pngFile)
-            .setHorizontalStretchBean(PatchStretchBean(60, 61))
-            .setVerticalStretchBean(PatchStretchBean(52, 53))
-            .setOriginSize(128, 112)
-            .setScaleFromFile(true)
-            .setPadding(Rect(31, 37, 90, 75))
-            .setHorizontalMirror(isSelf)
+            .setDrawableFile(pngFile)//图片文件
+            .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
+            .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
+            .setOriginSize(128, 112)//原始图片大小
+            .setScaleFromFile(true)//是否从文件中读取图片的缩放比例，不是必须的
+            .setPadding(Rect(31, 37, 90, 75))//padding区域
+            .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
             .buildFromFile()
     }
 
     private fun getStaticDrawableFromResource(context: Context, isSelf: Boolean): Drawable? {
         return NinePatchDrawableFactory(context)
-            .setDrawableResId(R.drawable.bubble_frame1)
-            .setHorizontalStretchBean(PatchStretchBean(60, 61))
-            .setVerticalStretchBean(PatchStretchBean(52, 53))
-            .setOriginSize(128, 112)
-            .setPadding(Rect(31, 37, 90, 75))
-            .setHorizontalMirror(isSelf)
+            .setDrawableResId(R.drawable.bubble_frame1)//图片资源id
+            .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
+            .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
+            .setOriginSize(128, 112)//原始图片大小
+            .setPadding(Rect(31, 37, 90, 75))//padding区域
+            .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
             .buildFromResource()
     }
 

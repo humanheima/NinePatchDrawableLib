@@ -172,31 +172,21 @@ AnimationDrawableFactory 支持从文件构建动画，也支持从Android的资
 **从文件构建动画**
 
 ```kotlin
-/**
- * 从文件加载动态气泡
- */
-private fun getDynamicDrawableFromFile(context: Context, pngDirName: String): Drawable? {
-    val dir = context.getExternalFilesDir(null)
-        ?: return null
-    val pngsDir: File = File(dir, pngDirName)
-    if (!pngsDir.exists()) {
-        return null
-    }
-    val files = pngsDir.listFiles()
-    if (files == null || files.isEmpty()) {
-        return null
-    }
-
-    return AnimationDrawableFactory().getAnimationDrawableFromFile(
-        context.resources,
-        true,
-        pngsDir,
-        PatchStretchBean(60, 61),
-        PatchStretchBean(52, 53),
-        Rect(31, 37, 90, 75), 128, 112, 5
-    )
-}
+ return AnimationDrawableFactory(context)
+    .setDrawableDir(pngsDir)//图片文件所在的目录
+    .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
+    .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
+    .setOriginSize(128, 112)//原始图片大小
+    .setPadding(Rect(31, 37, 90, 75))//padding区域
+    .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
+    .setScaleFromFile(true)//是否从文件中读取图片的缩放比例，不是必须的
+    .setFinishCount(3)//动画播放次数
+    .setFrameDuration(100)//每帧动画的播放时间
+    .buildFromFile()
 ```
+
+这里注意一下：因为文件中的图片是一倍图，所以这里需要放大，所以设置了`setScaleFromFile(true)`。
+如果文件中的图片是3倍图，就不需要设置这个参数了。如果需要更加精细的缩放控制，后面再增加支持。
 
 **从Android的资源文件夹构建动画**
 
@@ -220,19 +210,54 @@ private val resIdList = mutableListOf<Int>().apply {
 /**
  * 从正常的资源文件加载动态气泡
  */
-private fun getDynamicDrawableFromResource(context: Context): Drawable? {
-    return AnimationDrawableFactory().getAnimationDrawableFromResource(
-        context.resources,
-        resIdList,
-        PatchStretchBean(60, 61),
-        PatchStretchBean(52, 53),
-        Rect(31, 37, 90, 75), 128, 112, 5
-    )
-}
+return AnimationDrawableFactory(context)
+    .setDrawableResIdList(resIdList)//图片资源id列表
+    .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
+    .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
+    .setOriginSize(128, 112)//原始图片大小
+    .setPadding(Rect(31, 37, 90, 75))//padding区域
+    .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
+    .setFinishCount(3)//动画播放次数,不是必须的
+    .setFrameDuration(100)//每帧动画的播放时间,不是必须的
+    .buildFromResource()
 ```
 
 有时候可能我们只需要构建静态气泡，也就是只需要一张
 NinepatchDrawable，我们提供了一个类来构建静态气泡，`NinePatchDrawableFactory.kt`。
+
+**从文件加载**
+
+```kotlin
+return NinePatchDrawableFactory(context)
+            .setDrawableFile(pngFile)//图片文件
+            .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
+            .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
+            .setOriginSize(128, 112)//原始图片大小
+            .setScaleFromFile(true)//是否从文件中读取图片的缩放比例，不是必须的
+            .setPadding(Rect(31, 37, 90, 75))//padding区域
+            .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
+            .buildFromFile()
+```
+
+**从资源加载**
+
+```kotlin
+return NinePatchDrawableFactory(context)
+            .setDrawableResId(R.drawable.bubble_frame1)//图片资源id
+            .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
+            .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
+            .setOriginSize(128, 112)//原始图片大小
+            .setPadding(Rect(31, 37, 90, 75))//padding区域
+            .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
+            .buildFromResource()
+```
+
+### padding 取值
+
+如图所示：宽高是128*112。横向padding取值为31,90，纵向padding取值为37,75。
+
+![padding](images%2Fpadding.png)
+
 
 ### 其他
 
