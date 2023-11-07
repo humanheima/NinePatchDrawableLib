@@ -255,7 +255,7 @@ return NinePatchDrawableFactory(context)
 
 如图所示：宽高是128*112。横向padding取值为31,90，纵向padding取值为37,75。
 
-![padding取值.png](images%2Fpadding%E5%8F%96%E5%80%BC.png)
+![padding值.png](images%2Fpadding%E5%80%BC.png)
 
 ### 其他
 
