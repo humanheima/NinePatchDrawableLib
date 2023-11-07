@@ -8,19 +8,33 @@
         tools:context="com.dmw.ninepatchdrawablelib.MainActivity">
 
     <Button
-            android:id="@+id/btn_static_bubble"
+            android:id="@+id/btn_static_bubble_from_file"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="在RecyclerView(类似聊天列表)使用静态气泡" />
+            android:text="从文件加载静态气泡，在RecyclerView(类似聊天列表)使用" />
 
     <Button
-            android:id="@+id/btn_dynamic_bubble"
+            android:id="@+id/btn_static_bubble_from_drawable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="在RecyclerView(类似聊天列表)使用动态气泡" />
+            android:text="从drawable加载静态气泡，在RecyclerView(类似聊天列表)使用" />
 
+    <Button
+            android:id="@+id/btn_dynamic_bubble_from_file"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="从文件加载动态气泡，在RecyclerView(类似聊天列表)使用" />
+
+
+    <Button
+            android:id="@+id/btn_dynamic_bubble_from_drawable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="从drawable加载动态气泡，在RecyclerView(类似聊天列表)使用" />
 
 
 </LinearLayout>

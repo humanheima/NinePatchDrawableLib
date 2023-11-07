@@ -15,6 +15,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
     <RelativeLayout
+            android:id="@+id/rl_content"
             android:layout_width="0dp"
             app:layout_constraintTop_toTopOf="@+id/iv_avatar_left"
             app:layout_constraintStart_toEndOf="@+id/iv_avatar_left"
@@ -31,6 +32,15 @@
                 android:layout_marginEnd="12dp" />
 
     </RelativeLayout>
+
+    <View
+            app:layout_constraintTop_toBottomOf="@+id/rl_content"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/design_default_color_primary"
+            android:id="@+id/view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
             android:layout_width="36dp"

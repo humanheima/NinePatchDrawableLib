@@ -11,14 +11,16 @@ class RecyclerViewStaticBubbleActivity : BaseActivity() {
 
     companion object {
 
-        fun launch(context: Context) {
+        fun launch(context: Context, fromFile: Boolean) {
             val starter = Intent(context, RecyclerViewStaticBubbleActivity::class.java)
+            starter.putExtra("fromFile", fromFile)
             context.startActivity(starter)
         }
     }
 
     override fun createAdapter(): ChatAdapter {
-        adapter = ChatAdapter(items, this,false)
+        val fromFile = intent.getBooleanExtra("fromFile", false)
+        adapter = ChatAdapter(items, this, false, fromFile)
         return adapter as ChatAdapter
     }
 }

@@ -138,8 +138,6 @@ class AnimationDrawableFactory {
      */
     private fun get9PatchFromResource(resources: Resources, resId: Int): Drawable? {
         val resIdString = resId.toString()
-        Log.i(TAG, "setResourceData: resId = $resId")
-
         var bitmap = if (horizontalMirror) {
             bitmapLruCache.getBitmap(HORIZONTAL_MIRROR_PREFIX + resIdString)
         } else {
@@ -173,7 +171,7 @@ class AnimationDrawableFactory {
                 Log.i(TAG, "setResourceData: width = ${bitmap.width}, height = ${bitmap.height}")
             }
         } else {
-            Log.i(TAG, "setResourceData: 从缓存中获取bitmap != null")
+            Log.d(TAG, "setResourceData: 从缓存中获取bitmap != null")
         }
 
         setBitmapData(bitmap)

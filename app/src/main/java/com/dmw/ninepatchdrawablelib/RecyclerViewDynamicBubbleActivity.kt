@@ -11,18 +11,19 @@ import android.content.Intent
 class RecyclerViewDynamicBubbleActivity : BaseActivity() {
 
 
-   companion object {
+    companion object {
 
-       fun launch(context: Context) {
-           val starter = Intent(context, RecyclerViewDynamicBubbleActivity::class.java)
-           context.startActivity(starter)
-       }
-   }
-
+        fun launch(context: Context, fromFile: Boolean) {
+            val starter = Intent(context, RecyclerViewDynamicBubbleActivity::class.java)
+            starter.putExtra("fromFile", fromFile)
+            context.startActivity(starter)
+        }
+    }
 
 
     override fun createAdapter(): ChatAdapter {
-        adapter = ChatAdapter(items, this,true)
+        val fromFile = intent.getBooleanExtra("fromFile", false)
+        adapter = ChatAdapter(items, this, true, fromFile)
         return adapter as ChatAdapter
     }
 

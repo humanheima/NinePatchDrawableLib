@@ -10,24 +10,42 @@ import androidx.appcompat.app.AppCompatActivity
  */
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var btnStaticBubble: Button
-    private lateinit var btnDynamicBubble: Button
+    private lateinit var btnStaticBubbleFromFile: Button
+    private lateinit var btnStaticBubbleFromDrawable: Button
+
+
+    private lateinit var btnDynamicBubbleFromFile: Button
+    private lateinit var btnDynamicBubbleFromDrawable: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        btnStaticBubble = findViewById(R.id.btn_static_bubble)
-        btnDynamicBubble = findViewById(R.id.btn_dynamic_bubble)
+        btnStaticBubbleFromFile = findViewById(R.id.btn_static_bubble_from_file)
+        btnStaticBubbleFromDrawable = findViewById(R.id.btn_static_bubble_from_drawable)
+
+        btnDynamicBubbleFromFile = findViewById(R.id.btn_dynamic_bubble_from_file)
+        btnDynamicBubbleFromDrawable = findViewById(R.id.btn_dynamic_bubble_from_drawable)
 
         val fileDir = getExternalFilesDir(null)
         if (!fileDir!!.exists()) {
             fileDir.mkdirs()
         }
-        btnStaticBubble.setOnClickListener {
-            RecyclerViewStaticBubbleActivity.launch(this)
+        btnStaticBubbleFromFile.setOnClickListener {
+            RecyclerViewStaticBubbleActivity.launch(this, true)
         }
 
-        btnDynamicBubble.setOnClickListener {
-            RecyclerViewDynamicBubbleActivity.launch(this)
+        btnStaticBubbleFromDrawable.setOnClickListener {
+            RecyclerViewStaticBubbleActivity.launch(this, false)
+        }
+
+
+
+        btnDynamicBubbleFromFile.setOnClickListener {
+            RecyclerViewDynamicBubbleActivity.launch(this, true)
+        }
+
+        btnDynamicBubbleFromDrawable.setOnClickListener {
+            RecyclerViewDynamicBubbleActivity.launch(this, false)
         }
 
 

@@ -22,7 +22,12 @@ import java.io.File
  * Desc: 聊天列表适配器
  * @param isDynamic 是否使用动态气泡
  */
-class ChatAdapter(private val items: List<ChatItem>, val context: Context, val isDynamic: Boolean) :
+class ChatAdapter(
+    private val items: List<ChatItem>,
+    val context: Context,
+    val isDynamic: Boolean,
+    val fromFile: Boolean
+) :
     RecyclerView.Adapter<MyViewHolder>() {
 
 
@@ -76,11 +81,26 @@ class ChatAdapter(private val items: List<ChatItem>, val context: Context, val i
     }
 
     private fun getDrawable(isSelf: Boolean): Drawable? {
-        if (isDynamic) {
-            return getDynamicDrawableFromFile(context, "bubbleframe", isSelf)
-            //return getDynamicDrawableFromResource(context,isSelf)
+        //加载动态气泡
+        return if (isDynamic) {
+            if (fromFile) {
+                //从文件加载
+                getDynamicDrawableFromFile(context, "bubbleframe", isSelf)
+            } else {
+                //从资源文件drawable加载
+                getDynamicDrawableFromResource(context, isSelf)
+
+            }
+        } else {
+            //加载静态气泡
+            if (fromFile) {
+                //从文件加载
+                getStaticDrawableFromFile(context, "bubbleframe/bubble_frame1.png", isSelf)
+            } else {
+                //从资源文件drawable加载
+                getStaticDrawableFromResource(context, isSelf)
+            }
         }
-        return getStaticDrawable(isSelf)
     }
 
 
