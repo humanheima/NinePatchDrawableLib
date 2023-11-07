@@ -165,24 +165,26 @@ class ChatAdapter(
             return null
         }
 
-        return NinePatchDrawableFactory().get9PatchDrawableFromFile(
-            context.resources,
-            true,
-            pngFile,
-            PatchStretchBean(60, 61),
-            PatchStretchBean(52, 53),
-            Rect(31, 37, 90, 75), 128, 112, isSelf
-        )
+        return NinePatchDrawableFactory(context)
+            .setDrawableFile(pngFile)
+            .setHorizontalStretchBean(PatchStretchBean(60, 61))
+            .setVerticalStretchBean(PatchStretchBean(52, 53))
+            .setOriginSize(128, 112)
+            .setScaleFromFile(true)
+            .setPadding(Rect(31, 37, 90, 75))
+            .setHorizontalMirror(isSelf)
+            .buildFromFile()
     }
 
     private fun getStaticDrawableFromResource(context: Context, isSelf: Boolean): Drawable? {
-        return NinePatchDrawableFactory().get9PatchDrawableFromResource(
-            context.resources,
-            R.drawable.bubble_frame1,
-            PatchStretchBean(60, 61),
-            PatchStretchBean(52, 53),
-            Rect(31, 37, 90, 75), 128, 112, isSelf
-        )
+        return NinePatchDrawableFactory(context)
+            .setDrawableResId(R.drawable.bubble_frame1)
+            .setHorizontalStretchBean(PatchStretchBean(60, 61))
+            .setVerticalStretchBean(PatchStretchBean(52, 53))
+            .setOriginSize(128, 112)
+            .setPadding(Rect(31, 37, 90, 75))
+            .setHorizontalMirror(isSelf)
+            .buildFromResource()
     }
 
 
