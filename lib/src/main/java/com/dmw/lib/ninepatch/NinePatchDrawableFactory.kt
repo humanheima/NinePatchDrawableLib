@@ -94,7 +94,7 @@ class NinePatchDrawableFactory {
 
         Log.i(
             TAG,
-            "getAnimationDrawableFromResource: end 耗时：${System.currentTimeMillis() - currentTimeMillis} ms"
+            "get9PatchDrawableFromResource: end 耗时：${System.currentTimeMillis() - currentTimeMillis} ms"
         )
         return ninePatchDrawable
 

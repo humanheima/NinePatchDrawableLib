@@ -77,8 +77,8 @@ class ChatAdapter(private val items: List<ChatItem>, val context: Context, val i
 
     private fun getDrawable(isSelf: Boolean): Drawable? {
         if (isDynamic) {
-            //return getDynamicDrawableFromFile(context, "bubbleframe")
-            return getDynamicDrawableFromResource(context)
+            return getDynamicDrawableFromFile(context, "bubbleframe", isSelf)
+            //return getDynamicDrawableFromResource(context,isSelf)
         }
         return getStaticDrawable(isSelf)
     }
@@ -87,13 +87,14 @@ class ChatAdapter(private val items: List<ChatItem>, val context: Context, val i
     /**
      * 从正常的资源文件加载动态气泡
      */
-    private fun getDynamicDrawableFromResource(context: Context): Drawable? {
+    private fun getDynamicDrawableFromResource(context: Context, isSelf: Boolean): Drawable? {
         return AnimationDrawableFactory().getAnimationDrawableFromResource(
             context.resources,
             resIdList,
             PatchStretchBean(60, 61),
             PatchStretchBean(52, 53),
-            Rect(31, 37, 90, 75), 128, 112, 5
+            Rect(31, 37, 90, 75),
+            128, 112, 5, isSelf
         )
     }
 
@@ -101,10 +102,14 @@ class ChatAdapter(private val items: List<ChatItem>, val context: Context, val i
     /**
      * 从文件加载动态气泡
      */
-    private fun getDynamicDrawableFromFile(context: Context, pngDirName: String): Drawable? {
+    private fun getDynamicDrawableFromFile(
+        context: Context,
+        pngDirName: String,
+        isSelf: Boolean
+    ): Drawable? {
         val dir = context.getExternalFilesDir(null)
             ?: return null
-        val pngsDir: File = File(dir, pngDirName)
+        val pngsDir = File(dir, pngDirName)
         if (!pngsDir.exists()) {
             return null
         }
@@ -119,7 +124,8 @@ class ChatAdapter(private val items: List<ChatItem>, val context: Context, val i
             pngsDir,
             PatchStretchBean(60, 61),
             PatchStretchBean(52, 53),
-            Rect(31, 37, 90, 75), 128, 112, 5
+            Rect(31, 37, 90, 75), 128, 112, 5,
+            isSelf
         )
     }
 
