@@ -146,7 +146,7 @@ class ChatAdapter(
             .setOriginSize(128, 112)//原始图片大小
             .setPadding(Rect(31, 37, 90, 75))//padding区域
             .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
-            .setScaleFromFile(true)//是否从文件中读取图片的缩放比例，不是必须的
+            .setBitmapMapInDensity(1)
             .setFinishCount(3)//动画播放次数
             .setFrameDuration(100)//每帧动画的播放时间
             .buildFromFile()
@@ -168,8 +168,8 @@ class ChatAdapter(
             .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
             .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
             .setOriginSize(128, 112)//原始图片大小
-            .setScaleFromFile(true)//是否从文件中读取图片的缩放比例，不是必须的
             .setPadding(Rect(31, 37, 90, 75))//padding区域
+            .setBitmapMapInDensity(1)
             .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
             .buildFromFile()
     }

@@ -51,9 +51,10 @@ class AnimationDrawableFactory(private val context: Context) {
     }
 
     /**
-     * 从文件加载的图片是否需要缩放，如果文件中是1倍图，需要缩放，如果就是正常的3倍图，不需要缩放，这块缩放逻辑可以自行调整
+     * 文件中，原始图片的密度，这里默认是1，如果是3倍图，就是3
+     * 从文件中解析出来的bitmap，需要设置inDensity，inTargetDensity，才能正确的缩放
      */
-    private var scaleBitmapFromFile = false
+    private var bitmapMapInDensity: Int = 1
 
     /**
      * 是否要水平镜像，如果左右气泡都用一张图的话，需要水平镜像一下
@@ -167,14 +168,6 @@ class AnimationDrawableFactory(private val context: Context) {
     }
 
     /**
-     * 从文件加载出来的bitmap，是否要缩放。如果文件中是1倍图，那么需要缩放，如果是3倍图，就不用缩放了
-     */
-    fun setScaleFromFile(scaleBitmapFromFile: Boolean): AnimationDrawableFactory {
-        this.scaleBitmapFromFile = scaleBitmapFromFile
-        return this
-    }
-
-    /**
      * 不是必须的，如果不设置，就用默认的，循环一次
      */
     fun setFinishCount(finishCount: Int): AnimationDrawableFactory {
@@ -187,6 +180,11 @@ class AnimationDrawableFactory(private val context: Context) {
      */
     fun setFrameDuration(frameDuration: Int): AnimationDrawableFactory {
         this.frameDuration = frameDuration
+        return this
+    }
+
+    fun setBitmapMapInDensity(bitmapMapInDensity: Int): AnimationDrawableFactory {
+        this.bitmapMapInDensity = bitmapMapInDensity
         return this
     }
 
@@ -293,6 +291,7 @@ class AnimationDrawableFactory(private val context: Context) {
         //设置循环5次，就结束
         animationDrawable.setFinishCount(finishCount)
         files.forEach { pngFile ->
+            Log.i(TAG, "buildFromFile: pngFile = $pngFile")
             val ninePatchDrawable = get9PatchFromFile(context.resources, pngFile)
             if (ninePatchDrawable != null) {
                 animationDrawable.addFrame(ninePatchDrawable, frameDuration)
@@ -328,61 +327,36 @@ class AnimationDrawableFactory(private val context: Context) {
 
         if (bitmap == null) {
             bitmap = try {
-                BitmapFactory.decodeFile(absolutePath)
+                BitmapFactory.decodeFile(absolutePath, BitmapFactory.Options().apply {
+                    //bitmap 原本的密度
+                    inDensity = bitmapMapInDensity * DisplayMetrics.DENSITY_DEFAULT
+                    //当前设备的密度
+                    inTargetDensity = resources.displayMetrics.densityDpi
+                })
             } catch (e: Throwable) {
                 e.printStackTrace()
                 null
             }
 
             if (bitmap != null) {
-                if (scaleBitmapFromFile) {
-                    // warning：2023/11/5: 注意，这里从文件里加载的是1倍图，所以要放大一下
-                    val displayMetrics: DisplayMetrics = resources.displayMetrics
-                    val density = displayMetrics.density
-
+                Log.i(
+                    TAG,
+                    "setFileData: not scale width = ${bitmap.width}, height = ${bitmap.height}"
+                )
+                if (horizontalMirror) {
                     val matrix = Matrix()
-                    if (horizontalMirror) {
-                        matrix.preScale(-1f, 1f)
-                    }
-                    matrix.postScale(density, density)
-
-                    val scaledBitmap =
-                        Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-
-                    Log.i(
-                        TAG,
-                        "setFileData: scaledBitmap width = ${scaledBitmap.width}, height = ${scaledBitmap.height}"
+                    matrix.preScale(-1f, 1f)
+                    val mirrorBitmap = Bitmap.createBitmap(
+                        bitmap, 0, 0, bitmap.width, bitmap.height, matrix,
+                        false
                     )
-
-                    if (horizontalMirror) {
-                        bitmapLruCache.putBitmap(
-                            HORIZONTAL_MIRROR_PREFIX + absolutePath,
-                            scaledBitmap
-                        )
-                    } else {
-                        bitmapLruCache.putBitmap(absolutePath, scaledBitmap)
-                    }
-                    bitmap = scaledBitmap
+                    bitmapLruCache.putBitmap(
+                        HORIZONTAL_MIRROR_PREFIX + absolutePath,
+                        mirrorBitmap
+                    )
+                    bitmap = mirrorBitmap
                 } else {
-                    Log.i(
-                        TAG,
-                        "setFileData: not scale width = ${bitmap.width}, height = ${bitmap.height}"
-                    )
-                    if (horizontalMirror) {
-                        val matrix = Matrix()
-                        matrix.preScale(-1f, 1f)
-                        val mirrorBitmap = Bitmap.createBitmap(
-                            bitmap, 0, 0, bitmap.width, bitmap.height, matrix,
-                            false
-                        )
-                        bitmapLruCache.putBitmap(
-                            HORIZONTAL_MIRROR_PREFIX + absolutePath,
-                            mirrorBitmap
-                        )
-                        bitmap = mirrorBitmap
-                    } else {
-                        bitmapLruCache.putBitmap(absolutePath, bitmap)
-                    }
+                    bitmapLruCache.putBitmap(absolutePath, bitmap)
                 }
             }
         }
