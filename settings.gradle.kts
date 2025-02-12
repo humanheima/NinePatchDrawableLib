@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "NinePatchDrawableLib"
 include(":app")
 include(":lib")
+include(":referenceLibrary")
