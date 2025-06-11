@@ -461,6 +461,16 @@ class AnimationDrawableFactory(private val context: Context) {
     /**
      * 控制内容填充的区域
      * （注意：这里的left，top，right，bottom同xml文件中的padding意思一致，只不过这里是百分比形式）
+     *
+     * TODO 举个通俗的例子，并不对应代码逻辑。
+     *
+     * ### **举例说明**
+     * 假设一个 9-patch 图像尺寸为 100x100 像素：
+     * - 底部边框的黑色标记从第 20 像素到第 80 像素，表示内容区域的水平范围。
+     *     - 则 `mPaddings.left = 20`，`mPaddings.right = 100 - 80 = 20`。
+     * - 右侧边框的黑色标记从第 10 像素到第 90 像素，表示内容区域的垂直范围。
+     *     - 则 `mPaddings.top = 10`，`mPaddings.bottom = 100 - 90 = 10`。
+     * - 结果：内容区域是一个矩形，左上角坐标为 (20, 10)，右下角坐标为 (80, 90)，适合放置文本或图标。
      */
     private fun buildPadding() {
         if (horizontalMirror) {

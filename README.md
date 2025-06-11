@@ -270,4 +270,4 @@ return NinePatchDrawableFactory(context)
 * [Android动态布局入门及NinePatchChunk解密](https://mp.weixin.qq.com/s?__biz=MzI1NjEwMTM4OA==&mid=2651232105&idx=1&sn=fcc4fa956f329f839f2a04793e7dd3b9&mpshare=1&scene=21&srcid=0719Nyt7J8hsr4iYwOjVPXQE#wechat_redirect)
 * [Android点九图总结以及在聊天气泡中的使用-腾讯云开发者社区-腾讯云](https://cloud.tencent.com/developer/article/1168755?)
 * https://developer.android.com/studio/write/draw9patch?utm_source=android-studio&hl=zh-cn
-
+* [NinePatchDrawable does not get padding from chunk](https://stackoverflow.com/questions/11065996/ninepatchdrawable-does-not-get-padding-from-chunk)
