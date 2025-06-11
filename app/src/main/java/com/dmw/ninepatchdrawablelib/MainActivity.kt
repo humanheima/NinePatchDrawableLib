@@ -1,14 +1,19 @@
 package com.dmw.ninepatchdrawablelib
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.dmw.ninepatchdrawablelib.databinding.ActivityMainBinding
 
 /**
  * Created by p_dmweidu on 2023/11/6
  * Desc:
  */
 class MainActivity : AppCompatActivity() {
+
+
+    private val TAG = "MainActivity"
 
     private lateinit var btnStaticBubbleFromFile: Button
     private lateinit var btnStaticBubbleFromDrawable: Button
@@ -17,9 +22,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnDynamicBubbleFromFile: Button
     private lateinit var btnDynamicBubbleFromDrawable: Button
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         btnStaticBubbleFromFile = findViewById(R.id.btn_static_bubble_from_file)
         btnStaticBubbleFromDrawable = findViewById(R.id.btn_static_bubble_from_drawable)
 
@@ -30,6 +39,18 @@ class MainActivity : AppCompatActivity() {
         if (!fileDir!!.exists()) {
             fileDir.mkdirs()
         }
+
+
+        binding.btnCopyFile.setOnClickListener {
+            FileUtils.copyBubbleFrameFromAssets(this)
+
+            val fileList = FileUtils.listFiles(this)
+
+            fileList.forEach {
+                Log.d(TAG, "onCreate: $it")
+            }
+        }
+
         btnStaticBubbleFromFile.setOnClickListener {
             RecyclerViewStaticBubbleActivity.launch(this, true)
         }

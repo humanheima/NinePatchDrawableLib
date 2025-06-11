@@ -1,40 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    android:orientation="vertical"
+    tools:context="com.dmw.ninepatchdrawablelib.MainActivity">
+
+    <Button
+        android:id="@+id/btn_copy_file"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="match_parent"
-        android:layout_margin="16dp"
-        tools:context="com.dmw.ninepatchdrawablelib.MainActivity">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="先把assets文件下用到的图片复制到文件系统" />
 
     <Button
-            android:id="@+id/btn_static_bubble_from_file"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="从文件加载静态气泡，在RecyclerView(类似聊天列表)使用" />
+        android:id="@+id/btn_static_bubble_from_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="从文件加载静态气泡，在RecyclerView(类似聊天列表)使用" />
 
     <Button
-            android:id="@+id/btn_static_bubble_from_drawable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="从drawable加载静态气泡，在RecyclerView(类似聊天列表)使用" />
+        android:id="@+id/btn_static_bubble_from_drawable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="从drawable加载静态气泡，在RecyclerView(类似聊天列表)使用" />
 
     <Button
-            android:id="@+id/btn_dynamic_bubble_from_file"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="从文件加载动态气泡，在RecyclerView(类似聊天列表)使用" />
+        android:id="@+id/btn_dynamic_bubble_from_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="从文件加载动态气泡，在RecyclerView(类似聊天列表)使用" />
 
 
     <Button
-            android:id="@+id/btn_dynamic_bubble_from_drawable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="从drawable加载动态气泡，在RecyclerView(类似聊天列表)使用" />
+        android:id="@+id/btn_dynamic_bubble_from_drawable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="从drawable加载动态气泡，在RecyclerView(类似聊天列表)使用" />
 
 
 </LinearLayout>
