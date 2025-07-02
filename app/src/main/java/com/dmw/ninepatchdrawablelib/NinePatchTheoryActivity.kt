@@ -3,13 +3,16 @@ package com.dmw.ninepatchdrawablelib
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.NinePatch
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.dmw.lib.ninepatch.NinePatchDrawableFactory
+import com.dmw.lib.ninepatch.PatchStretchBean
 import com.dmw.ninepatchdrawablelib.databinding.ActivityNinePatchTheoryBinding
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -36,7 +39,7 @@ class NinePatchTheoryActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnDeserialize.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch {
                 Log.d(TAG, "onCreate: currentThread = ${Thread.currentThread().name}")
                 testDeserialize()
             }
@@ -77,8 +80,22 @@ class NinePatchTheoryActivity : AppCompatActivity() {
         // 打印信息
         Log.d(TAG, "Horizontal stretch regions: " + divX.contentToString())
         Log.d(TAG, "Vertical stretch regions: " + divY.contentToString())
-        Log.d(TAG, "Padding: $padding");
+        Log.d(TAG, "Padding: $padding")
 
+        binding.tvContent1.background = getDrawable(R.drawable.test_bubble_frame1)
+        binding.tvContent2.background = getStaticDrawableFromResource(this, false)
+        binding.tvContent2.text = "生，亦我所欲也；义，亦我所欲也。二者不可得兼，舍生而取义者也。生亦我所欲，所欲有甚于生者，故不为苟得也；死亦我所恶，所恶有甚于死者，故患有所不辟也"
+    }
+
+    private fun getStaticDrawableFromResource(context: Context, isSelf: Boolean): Drawable? {
+        return NinePatchDrawableFactory(context)
+            .setDrawableResId(R.drawable.bubble_frame1)//图片资源id
+            .setHorizontalStretchBean(PatchStretchBean(54, 59))//水平拉伸区域
+            .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
+            .setOriginSize(128, 112)//原始图片大小
+            .setPadding(Rect(30, 36, 89, 60))//padding区域
+            .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
+            .buildFromResource()
     }
 
 }

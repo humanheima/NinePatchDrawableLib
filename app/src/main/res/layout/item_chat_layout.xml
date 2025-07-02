@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:padding="12dp"
-        android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp">
 
     <ImageView
-            android:layout_width="36dp"
-            android:background="@mipmap/ic_launcher_round"
-            android:layout_height="36dp"
-            android:id="@+id/iv_avatar_left"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+        android:id="@+id/iv_avatar_left"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@mipmap/ic_launcher_round"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <RelativeLayout
-            android:id="@+id/rl_content"
-            android:layout_width="0dp"
-            app:layout_constraintTop_toTopOf="@+id/iv_avatar_left"
-            app:layout_constraintStart_toEndOf="@+id/iv_avatar_left"
-            app:layout_constraintEnd_toStartOf="@+id/iv_avatar_right"
-            android:layout_height="wrap_content">
+        android:id="@+id/rl_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/iv_avatar_right"
+        app:layout_constraintStart_toEndOf="@+id/iv_avatar_left"
+        app:layout_constraintTop_toTopOf="@+id/iv_avatar_left">
 
         <TextView
-                android:id="@+id/tv_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:gravity="center"
-                tools:text="鱼"
-                android:layout_marginEnd="12dp" />
+            android:id="@+id/tv_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginEnd="12dp"
+            android:maxHeight="120dp"
+            tools:text="生，亦我所欲也；义，亦我所欲也。二者不可得兼，舍生而取义者也。生亦我所欲，所欲有甚于生者，故不为苟得也；死亦我所恶，所恶有甚于死者，故患有所不辟也" />
 
     </RelativeLayout>
 
     <View
-            app:layout_constraintTop_toBottomOf="@+id/rl_content"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:background="@color/design_default_color_primary"
-            android:id="@+id/view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/design_default_color_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rl_content" />
 
     <ImageView
-            android:layout_width="36dp"
-            android:background="@mipmap/ic_launcher_round"
-            android:layout_height="36dp"
-            tools:visibility="visible"
-            android:visibility="gone"
-            android:id="@+id/iv_avatar_right"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+        android:id="@+id/iv_avatar_right"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@mipmap/ic_launcher_round"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

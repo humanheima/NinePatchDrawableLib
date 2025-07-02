@@ -366,19 +366,19 @@ class NinePatchDrawableFactory(private val context: Context) {
         //mDivX数组
         horizontalStretchBean?.let {
             if (horizontalMirror) {
-                byteBuffer.putInt((originWidth - it.end) * finalWidth / originWidth)
-                byteBuffer.putInt((originWidth - it.start) * finalWidth / originWidth)
+                byteBuffer.putInt(((originWidth - it.end) * finalWidth * 1.0f / originWidth).roundToInt())
+                byteBuffer.putInt(((originWidth - it.start) * finalWidth * 1.0f / originWidth).roundToInt())
             } else {
-                byteBuffer.putInt(it.start * finalWidth / originWidth)
-                byteBuffer.putInt(it.end * finalWidth / originWidth)
+                byteBuffer.putInt((it.start * finalWidth * 1.0f / originWidth).roundToInt())
+                byteBuffer.putInt((it.end * finalWidth * 1.0f / originWidth).roundToInt())
             }
         }
 
         //mDivY数组
         // regions 控制竖向拉伸的线段数据
         verticalStretchBean?.let {
-            byteBuffer.putInt(it.start * finalHeight / originHeight)
-            byteBuffer.putInt(it.end * finalHeight / originHeight)
+            byteBuffer.putInt((it.start * finalHeight * 1.0f / originHeight).roundToInt())
+            byteBuffer.putInt((it.end * finalHeight * 1.0f / originHeight).roundToInt())
         }
 
         //mColor数组
