@@ -51,6 +51,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        binding.btnNinePatchTheory.setOnClickListener {
+            NinePatchTheoryActivity.launch(this)
+        }
+
         btnStaticBubbleFromFile.setOnClickListener {
             RecyclerViewStaticBubbleActivity.launch(this, true)
         }

@@ -32,7 +32,7 @@ class ChatAdapter(
 
 
     private val resIdList = mutableListOf<Int>().apply {
-        add(R.drawable.bubble_frame1)
+        add(R.drawable.test_bubble_frame1)
         add(R.drawable.bubble_frame2)
         add(R.drawable.bubble_frame3)
         add(R.drawable.bubble_frame4)
@@ -176,7 +176,7 @@ class ChatAdapter(
 
     private fun getStaticDrawableFromResource(context: Context, isSelf: Boolean): Drawable? {
         return NinePatchDrawableFactory(context)
-            .setDrawableResId(R.drawable.bubble_frame1)//图片资源id
+            .setDrawableResId(R.drawable.test_bubble_frame1)//图片资源id
             .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
             .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
             .setOriginSize(128, 112)//原始图片大小

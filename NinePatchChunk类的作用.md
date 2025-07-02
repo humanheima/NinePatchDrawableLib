@@ -68,7 +68,8 @@ public class NinePatchExample {
 
 ### 请问内容区域是怎么定义的？具体 grok 解析
 
-在 `NinePatchChunk` 类中，内容区域（Content Area）是由 `mPaddings` 字段定义的。`mPaddings` 是一个 `Rect` 对象，包含四个整数字段：`left`、`right`、`top` 和 `bottom`，它们指定了 9-patch 图像中内容（如文本或子视图）可以安全放置的区域。以下是对内容区域定义的详细解析：
+在 `NinePatchChunk` 类中，内容区域（Content Area）是由 `mPaddings` 字段定义的。
+`mPaddings` 是一个 `Rect` 对象，包含四个整数字段：`left`、`right`、`top` 和 `bottom`，它们指定了 9-patch 图像中内容（如文本或子视图）可以安全放置的区域。以下是对内容区域定义的详细解析：
 
 ---
 
@@ -101,7 +102,7 @@ public class NinePatchExample {
 ### **在 9-Patch 图像中的定义方式**
 在 9-patch PNG 文件中，内容区域是通过图像底部的 1 像素边框（水平方向）和右侧的 1 像素边框（垂直方向）定义的：
 - **黑色标记**：在底部和右侧边框中，黑色的像素（RGB 0,0,0）表示内容区域的范围。
-    - 例如，底部边框中从第 10 像素到第 20 像素是黑色，则 `mPaddings.left = 10`，`mPaddings.right = 图像宽度 - 20`。
+    - 例如，底部边框中从第 10 像素到第 80 像素是黑色，则 `mPaddings.left = 10`，`mPaddings.right = 图像宽度 - 80`。
     - 类似地，右侧边框的黑色标记定义 `mPaddings.top` 和 `mPaddings.bottom`。
 - 这些标记在 PNG 文件的 9-patch 块数据中被编码为 `mPaddings` 的值，`NinePatchChunk` 类通过 `deserialize` 方法解析这些值。
 
