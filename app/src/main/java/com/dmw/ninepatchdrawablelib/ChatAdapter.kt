@@ -177,10 +177,11 @@ class ChatAdapter(
     private fun getStaticDrawableFromResource(context: Context, isSelf: Boolean): Drawable? {
         return NinePatchDrawableFactory(context)
             .setDrawableResId(R.drawable.test_bubble_frame1)//图片资源id
-            .setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
-            .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
+            //.setHorizontalStretchBean(PatchStretchBean(60, 61))//水平拉伸区域
+            .setHorizontalStretchBean(PatchStretchBean(54, 59))//水平拉伸区域
+            .setVerticalStretchBean(PatchStretchBean(61, 63))//垂直拉伸区域
             .setOriginSize(128, 112)//原始图片大小
-            .setPadding(Rect(31, 37, 90, 75))//padding区域
+            .setPadding(Rect(30, 36, 89, 74))//padding区域
             .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
             .buildFromResource()
     }
@@ -188,16 +189,9 @@ class ChatAdapter(
 
     class MyViewHolder(v: View) : RecyclerView.ViewHolder(v) {
 
-        var tvContent: TextView
-        var ivAvatarLeft: ImageView
-        var ivAvatarRight: ImageView
-
-
-        init {
-            tvContent = v.findViewById(R.id.tv_content)
-            ivAvatarLeft = v.findViewById(R.id.iv_avatar_left)
-            ivAvatarRight = v.findViewById(R.id.iv_avatar_right)
-        }
+        var tvContent: TextView = v.findViewById(R.id.tv_content)
+        var ivAvatarLeft: ImageView = v.findViewById(R.id.iv_avatar_left)
+        var ivAvatarRight: ImageView = v.findViewById(R.id.iv_avatar_right)
     }
 
 

@@ -14,6 +14,7 @@ import androidx.annotation.DrawableRes
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.roundToInt
 
 /**
  * Created by p_dmweidu on 2023/11/6
@@ -300,16 +301,19 @@ class NinePatchDrawableFactory(private val context: Context) {
      */
     private fun buildPadding() {
         if (horizontalMirror) {
-            finalPaddingRect.left = ((originWidth - paddingRight) * finalWidth / originWidth)
-            finalPaddingRect.right = ((paddingLeft * finalWidth) / originWidth)
+            finalPaddingRect.left =
+                ((originWidth - paddingRight) * 1.0f * finalWidth / originWidth).roundToInt()
+            finalPaddingRect.right = ((paddingLeft * finalWidth) * 1.0f / originWidth).roundToInt()
         } else {
-            finalPaddingRect.left = ((paddingLeft * finalWidth) / originWidth)
-            finalPaddingRect.right = ((originWidth - paddingRight) * finalWidth / originWidth)
+            finalPaddingRect.left = ((paddingLeft * finalWidth) * 1.0f / originWidth).roundToInt()
+            finalPaddingRect.right =
+                ((originWidth - paddingRight) * 1.0f * finalWidth / originWidth).roundToInt()
         }
-        finalPaddingRect.top = (paddingTop * finalHeight / originHeight)
-        finalPaddingRect.bottom = ((originHeight - paddingBottom) * finalHeight / originHeight)
+        finalPaddingRect.top = (paddingTop * finalHeight * 1.0f / originHeight).roundToInt()
+        finalPaddingRect.bottom =
+            ((originHeight - paddingBottom) * 1.0f * finalHeight / originHeight).roundToInt()
 
-        Log.i(TAG, "buildPadding: rect = $finalPaddingRect")
+        Log.i(TAG, "buildPadding: rect = ${finalPaddingRect.toString()}")
     }
 
     /**
