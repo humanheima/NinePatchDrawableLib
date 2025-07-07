@@ -344,7 +344,12 @@ class NinePatchDrawableFactory(private val context: Context) {
         byteBuffer.putInt(0)
         byteBuffer.putInt(0)
 
-        //Note: 等待进一步研究，这四个int值，好像都写0也可以。
+        /**
+         * Note: 等待进一步研究，这四个int值，好像都写0也可以。这里为什么写0也可以，是因为我们调用 NinePatchDrawable 构造函数的时候，已经把正确的 finalPaddingRect 值传入了
+         *
+         * val ninePatchDrawable = NinePatchDrawable(resources, bitmap, chunk, finalPaddingRect, null)
+         *
+         */
         //左右padding
         byteBuffer.putInt(finalPaddingRect.left)
         byteBuffer.putInt(finalPaddingRect.right)
@@ -401,8 +406,7 @@ class NinePatchDrawableFactory(private val context: Context) {
             if (chunk == null) {
                 chunk = buildChunk()
             }
-            val ninePatchDrawable =
-                NinePatchDrawable(resources, bitmap, chunk, finalPaddingRect, null)
+            val ninePatchDrawable = NinePatchDrawable(resources, bitmap, chunk, finalPaddingRect, null)
             ninePatchDrawable
         } catch (e: Exception) {
             null

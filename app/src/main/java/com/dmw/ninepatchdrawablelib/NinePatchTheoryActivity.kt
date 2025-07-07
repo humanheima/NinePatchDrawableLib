@@ -3,7 +3,6 @@ package com.dmw.ninepatchdrawablelib
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.graphics.NinePatch
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -94,6 +93,7 @@ class NinePatchTheoryActivity : AppCompatActivity() {
             .setVerticalStretchBean(PatchStretchBean(52, 53))//垂直拉伸区域
             .setOriginSize(128, 112)//原始图片大小
             .setPadding(Rect(30, 36, 89, 60))//padding区域
+            //.setPadding(Rect(0,0,0,0))//padding区域
             .setHorizontalMirror(isSelf)//是否水平镜像，不是必须的
             .buildFromResource()
     }
